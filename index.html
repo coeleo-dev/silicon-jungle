@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>The Silicon Jungle</title>
+  <!-- Google Fonts: Sci-Fi / Anime HUD -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,400;0,600;0,700;1,500&family=Share+Tech+Mono&family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Modular CSS Components -->
+  <link rel="stylesheet" href="css/main.css?v=20260902">
+  <link rel="stylesheet" href="css/hud.css?v=20260912">
+  <link rel="stylesheet" href="css/compass.css">
+  <link rel="stylesheet" href="css/dialogue.css?v=20260902">
+  <link rel="stylesheet" href="css/crafting.css?v=20260902">
+  <link rel="stylesheet" href="css/inventory.css?v=20260902">
+  <link rel="stylesheet" href="css/crate.css?v=20260912">
+  <link rel="stylesheet" href="css/overlay.css?v=20260902">
+  <link rel="stylesheet" href="css/trade.css?v=20260902">
+
+  <!-- Three.js CDN, PointerLockControls & GLTFLoader -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/PointerLockControls.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+</head>
+<body>
+
+  <!-- Canvas WebGL 3D -->
+  <canvas id="webgl-canvas"></canvas>
+
+  <!-- Efeitos de Pós-Processamento e Scanlines -->
+  <div class="scanlines"></div>
+  <div id="speed-lines"></div>
+  <div id="damage-flash-overlay"></div>
+
+  <!-- HUD Diegético em Primeira Pessoa -->
+  <div id="hud-layer">
+
+    <!-- Feedback Visual de Combate (Fase 3): barras de vida, números de dano e indicador direcional -->
+    <div id="enemy-healthbars"></div>
+    <div id="damage-numbers"></div>
+    <div id="damage-indicator"></div>
+
+    <!-- Topo da Interface: Diagnóstico e Barras de Sobrevivência -->
+    <div class="top-bar">
+      
+      <!-- Informações do Setor & Diagnóstico de FPS -->
+      <div class="sector-info">
+        <div class="sector-title-row">
+          <div class="sector-title">
+            <span class="blink-dot"></span>
+            SECTOR PCB-760 // SILICON JUNGLE
+          </div>
+          <div class="fps-badge high" id="fps-badge" title="Frames per second and render time">
+            <span class="fps-num" id="fps-val">60</span>
+            <span class="fps-unit">FPS</span>
+            <span class="fps-ms" id="fps-ms">16.6 ms</span>
+          </div>
+        </div>
+        <div class="sector-sub" id="status-coords">POS: X:0.0 | Z:30.0 // STATUS: READY</div>
+      </div>
+
+      <!-- Vitas de Sobrevivência -->
+      <div class="survival-indicators">
+        <!-- Energia de Dados -->
+        <div class="stat-row">
+          <div class="stat-header">
+            <span class="stat-label">⚡ DATA ENERGY</span>
+            <span class="stat-val" id="energy-val" style="color: var(--cyan-glow);">100%</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-fill fill-energy" id="energy-bar"></div>
+          </div>
+        </div>
+
+        <!-- Integridade do Circuito (HP) -->
+        <div class="stat-row">
+          <div class="stat-header">
+            <span class="stat-label">🛡️ CIRCUIT INTEGRITY</span>
+            <span class="stat-val" id="integrity-val" style="color: var(--pcb-green);">100%</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-fill fill-integrity" id="integrity-bar"></div>
+          </div>
+        </div>
+
+        <!-- Coletor de Células de Barramento -->
+        <div class="core-counter">
+          <span>🔋 CELLS COLLECTED:</span>
+          <span id="collected-val" style="font-weight: bold; color: #fff;">0 / 6</span>
+        </div>
+
+        <div id="bus-campaign-hud" title="Board power buses">
+          <span class="bus-icon" id="bus-icon-atx" data-bus="atx">ATX</span>
+          <span class="bus-icon" id="bus-icon-dimm" data-bus="dimm">DIMM</span>
+          <span class="bus-icon" id="bus-icon-io" data-bus="io">I/O</span>
+          <span class="bus-icon" id="bus-icon-heatsink" data-bus="heatsink">HSK</span>
+        </div>
+
+        <!-- Status do Capdog Companion -->
+        <div class="stat-row capdog-stat-row" id="capdog-hud-card" style="display: none;">
+          <div class="stat-header">
+            <span class="stat-label">🐕 CAPDOG [LV.<span id="capdog-level-val">1</span>]</span>
+            <span class="stat-val" id="capdog-hp-val" style="color: #38bdf8;">100 HP</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-fill" id="capdog-hp-bar" style="background: linear-gradient(90deg, #0284c7, #38bdf8); width: 100%;"></div>
+          </div>
+        </div>
+
+        <div id="mini-resources-bar">
+          <div class="mini-res-item"><span style="color:#f59e0b;">🧵</span> <b id="mini-copper-count">0</b></div>
+          <div class="mini-res-item"><span style="color:#10b981;">🧪</span> <b id="mini-paste-count">0</b></div>
+          <div class="mini-res-item"><span style="color:#00f0ff;">💎</span> <b id="mini-crystal-count">0</b></div>
+          <div class="mini-res-item"><span style="color:#38bdf8;">🔋</span> <b id="mini-energy-count">0</b></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Centro: Retículo de Mira Dinâmico e Tooltips -->
+    <div id="crosshair-container">
+      <div class="reticle-wrap" id="reticle-wrap">
+        <div class="reticle-line reticle-h"></div>
+        <div class="reticle-line reticle-v"></div>
+        <div class="reticle-center"></div>
+        <div class="hitmarker" id="hitmarker"></div>
+      </div>
+      <div id="target-tooltip">PRESS [E] TO INTERACT</div>
+    </div>
+
+    <!-- Notificação Flutuante (Action Banner) -->
+    <div id="action-banner">
+      <span id="banner-icon">⚡</span>
+      <span id="banner-text">Power module restored (+30%)</span>
+    </div>
+
+    <!-- Base da Interface: Bússola e Arsenal -->
+    <div class="bottom-bar">
+      
+      <!-- Bússola Eletrônica -->
+      <div class="compass-container">
+        <div class="compass-dial-wrap">
+          <canvas id="compass-canvas" width="220" height="220"></canvas>
+        </div>
+        <div class="compass-readout" id="compass-heading">000° NORTH</div>
+      </div>
+
+      <!-- Hub de Armas & Ferramentas -->
+      <div class="weapon-hub-container">
+        
+        <!-- Barra de Slots 1 a 4 -->
+        <div class="weapon-slots-bar">
+          <div class="slot-badge" id="slot-1"><span class="slot-num">1</span> 🔪 KNIFE</div>
+          <div class="slot-badge" id="slot-2"><span class="slot-num">2</span> 🔦 FLASHLIGHT</div>
+          <div class="slot-badge active" id="slot-3"><span class="slot-num">3</span> 🔫 PISTOL</div>
+          <div class="slot-badge" id="slot-4"><span class="slot-num">4</span> 💥 SHOTGUN</div>
+          <div class="slot-badge" id="slot-5"><span class="slot-num">5</span> ⚡ RIFLE</div>
+        </div>
+
+        <div id="build-hotbar" class="build-hotbar" style="display:none;">
+          <span class="build-hotbar-mode">BUILD [B]</span>
+          <span id="build-hotbar-name" class="build-hotbar-name">PCB FLOOR</span>
+          <span class="build-hotbar-stack-wrap">×<b id="build-hotbar-stack">0</b></span>
+          <span id="build-hotbar-hint" class="build-hotbar-hint">[ ] SCROLL | 2 wires</span>
+        </div>
+
+        <!-- Cartão da Arma Ativa -->
+        <div class="multitool-card">
+          <div class="tool-title" id="active-weapon-name">🔫 PLASMA PISTOL</div>
+          <div class="tool-mode" id="active-weapon-mode">[LMB] : PRECISE PLASMA SHOT</div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Caixa de Diálogo Diegética de NPCs Transistors -->
+    <div id="dialogue-overlay">
+      <div class="dialogue-card">
+        <div class="dialogue-header">
+          <div class="dialogue-avatar">🤖</div>
+          <div class="dialogue-meta">
+            <div class="dialogue-name" id="dialogue-speaker-name">ELDER GATE</div>
+            <div class="dialogue-role" id="dialogue-speaker-role">CIRCUIT VILLAGE LEADER</div>
+          </div>
+          <div class="dialogue-signal-tag">CHANNEL PCB-760 // CONNECTED</div>
+        </div>
+        <div class="dialogue-body">
+          <p id="dialogue-text">Greetings, silicon traveler...</p>
+        </div>
+        <div class="dialogue-footer">
+          <span class="dialogue-prompt" id="dialogue-advance-prompt">[E / SPACE / CLICK] CONTINUE ▶</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Menu de Crafting da Bancada dos Transistors -->
+    <div id="crafting-overlay">
+      <div class="crafting-window">
+        <div class="crafting-header">
+          <div class="crafting-header-left">
+            <div class="crafting-badge">HARDWARE BENCH // PCB-760</div>
+            <h2 class="crafting-title">🛠️ FORGE &amp; CIRCUIT CRAFTING</h2>
+          </div>
+          <button class="btn-close-craft" id="btn-close-crafting">✕ CLOSE [ESC]</button>
+        </div>
+
+        <div class="crafting-resources-bar">
+          <div class="res-item"><span class="res-icon">🔋</span> CELLS: <b id="craft-res-energy">0</b></div>
+          <div class="res-item"><span class="res-icon">🧵</span> COPPER WIRES: <b id="craft-res-copper">0</b></div>
+          <div class="res-item"><span class="res-icon">🧪</span> THERMAL PASTE: <b id="craft-res-paste">0</b></div>
+          <div class="res-item"><span class="res-icon">💎</span> CLOCK CRYSTALS: <b id="craft-res-crystal">0</b></div>
+        </div>
+
+        <div class="crafting-recipes-grid" id="crafting-recipes-list">
+          <!-- Receitas renderizadas via crafting.js -->
+        </div>
+
+        <div class="crafting-footer">
+          <span class="crafting-tip">💡 TIP: Press [H] in-game to use thermal paste and repair +35% integrity!</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Menu de Mochila / Inventário do Explorador -->
+    <div id="inventory-overlay">
+      <div class="inventory-window">
+        <div class="inventory-header">
+          <div class="inventory-header-left">
+            <div class="inventory-badge">TACTICAL PACK // PCB-760</div>
+            <h2 class="inventory-title">🎒 EXPLORER INVENTORY</h2>
+          </div>
+          <button class="btn-close-inv" id="btn-close-inventory">✕ CLOSE [TAB / ESC]</button>
+        </div>
+
+        <div class="inventory-content-grid">
+          <!-- Coluna Esquerda: Recursos & Ações Rápidas -->
+          <div>
+            <div class="inv-section-title">📦 Collected silicon resources</div>
+            <div class="inv-resources-grid">
+              <!-- Fios de Cobre -->
+              <div class="inv-resource-card">
+                <div class="inv-res-icon" style="color: #f59e0b;">🧵</div>
+                <div class="inv-res-info">
+                  <span class="inv-res-name">Copper Wires</span>
+                  <span class="inv-res-count" id="inv-res-copper">0</span>
+                </div>
+              </div>
+
+              <!-- Pastas Térmicas -->
+              <div class="inv-resource-card">
+                <div class="inv-res-icon" style="color: #10b981;">🧪</div>
+                <div class="inv-res-info">
+                  <span class="inv-res-name">Thermal Paste</span>
+                  <span class="inv-res-count" id="inv-res-paste">0</span>
+                </div>
+                <button class="btn-res-action" id="btn-use-paste">USE [+35% HP]</button>
+              </div>
+
+              <!-- Cristais de Clock -->
+              <div class="inv-resource-card">
+                <div class="inv-res-icon" style="color: #00f0ff;">💎</div>
+                <div class="inv-res-info">
+                  <span class="inv-res-name">Clock Crystals</span>
+                  <span class="inv-res-count" id="inv-res-crystal">0</span>
+                </div>
+              </div>
+
+              <!-- Células de Energia -->
+              <div class="inv-resource-card">
+                <div class="inv-res-icon" style="color: #38bdf8;">🔋</div>
+                <div class="inv-res-info">
+                  <span class="inv-res-name">Energy Cells</span>
+                  <span class="inv-res-count" id="inv-res-cell">0</span>
+                </div>
+                <button class="btn-res-action" id="btn-use-cell">USE [+45% EN]</button>
+              </div>
+
+              <div class="inv-resource-card">
+                <div class="inv-res-icon" style="color: #e2e8f0;">◆</div>
+                <div class="inv-res-info">
+                  <span class="inv-res-name">Pure Silicon</span>
+                  <span class="inv-res-count" id="inv-res-silicon">0</span>
+                </div>
+              </div>
+              <div class="inv-resource-card">
+                <div class="inv-res-icon" style="color: #94a3b8;">◇</div>
+                <div class="inv-res-info">
+                  <span class="inv-res-name">Silver Compound</span>
+                  <span class="inv-res-count" id="inv-res-silver">0</span>
+                </div>
+              </div>
+              <div class="inv-resource-card">
+                <div class="inv-res-icon" style="color: #38bdf8;">▣</div>
+                <div class="inv-res-info">
+                  <span class="inv-res-name">Lithium Cells</span>
+                  <span class="inv-res-count" id="inv-res-lithium">0</span>
+                </div>
+              </div>
+              <div class="inv-resource-card">
+                <div class="inv-res-icon" style="color: #22d3ee;">≈</div>
+                <div class="inv-res-info">
+                  <span class="inv-res-name">Electrolyte</span>
+                  <span class="inv-res-count" id="inv-res-electrolyte">0</span>
+                </div>
+              </div>
+              <div class="inv-resource-card">
+                <div class="inv-res-icon" style="color: #fbbf24;">⊕</div>
+                <div class="inv-res-info">
+                  <span class="inv-res-name">Ti-Cu Alloy</span>
+                  <span class="inv-res-count" id="inv-res-ticu">0</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="inv-section-title">⬛ Base pieces (craft → [B] in the world)</div>
+            <div class="inv-resources-grid">
+              <div class="inv-resource-card">
+                <div class="inv-res-icon" style="color: #22d3ee;">⬛</div>
+                <div class="inv-res-info">
+                  <span class="inv-res-name">PCB Floor</span>
+                  <span class="inv-res-count" id="inv-res-pcb-floor">0</span>
+                </div>
+              </div>
+              <div class="inv-resource-card">
+                <div class="inv-res-icon" style="color: #0f766e;">🧱</div>
+                <div class="inv-res-info">
+                  <span class="inv-res-name">PCB Wall</span>
+                  <span class="inv-res-count" id="inv-res-pcb-wall">0</span>
+                </div>
+              </div>
+              <div class="inv-resource-card">
+                <div class="inv-res-icon" style="color: #67e8f9;">🚪</div>
+                <div class="inv-res-info">
+                  <span class="inv-res-name">PCB Door</span>
+                  <span class="inv-res-count" id="inv-res-pcb-door">0</span>
+                </div>
+              </div>
+              <div class="inv-resource-card">
+                <div class="inv-res-icon" style="color: #fde047;">🪜</div>
+                <div class="inv-res-info">
+                  <span class="inv-res-name">PCB Stair</span>
+                  <span class="inv-res-count" id="inv-res-pcb-stair">0</span>
+                </div>
+              </div>
+              <div class="inv-resource-card">
+                <div class="inv-res-icon" style="color: #fbbf24;">📦</div>
+                <div class="inv-res-info">
+                  <span class="inv-res-name">PCB Crate</span>
+                  <span class="inv-res-count" id="inv-res-pcb-crate">0</span>
+                </div>
+              </div>
+              <div class="inv-resource-card">
+                <div class="inv-res-icon" style="color: #00ffaa;">🛠️</div>
+                <div class="inv-res-info">
+                  <span class="inv-res-name">PCB Bench</span>
+                  <span class="inv-res-count" id="inv-res-pcb-bench">0</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="inv-section-title">📊 System diagnostics</div>
+            <div class="inv-stats-box">
+              <div class="inv-stat-line"><span>⚡ Data energy:</span> <b id="inv-stat-energy">100%</b></div>
+              <div class="inv-stat-line"><span>🛡️ Circuit integrity:</span> <b id="inv-stat-integrity">100%</b></div>
+              <div class="inv-stat-line"><span>🐕 Capdog status:</span> <b id="inv-stat-capdog">WAITING</b></div>
+              <div class="inv-stat-line"><span>🗺️ Current sector:</span> <b>PCB-760 // SILICON METROPOLIS</b></div>
+            </div>
+          </div>
+
+          <!-- Coluna Direita: Arsenal & Equipamentos -->
+          <div>
+            <div class="inv-section-title">🔫 Arsenal &amp; tools</div>
+            <div class="inv-weapons-list" id="inv-weapons-list">
+              <!-- Armas renderizadas via inventoryUI.js -->
+            </div>
+          </div>
+        </div>
+
+        <div class="inventory-footer">
+          <span class="inventory-tip">💡 PCB pieces are not placed from here: close the pack, press [B] in the world, left-click the ground. [R] rotates; scroll cycles type.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Menu de Comércio do Bip o Ferreiro -->
+    <div id="trade-overlay">
+      <div class="trade-window">
+        <div class="trade-header">
+          <div class="trade-header-left">
+            <div class="trade-badge">SILICON MARKET // PCB-760</div>
+            <h2 class="trade-title" id="trade-title">🔧 TRADE</h2>
+          </div>
+          <button class="btn-close-trade" id="btn-close-trade">✕ CLOSE [ESC]</button>
+        </div>
+
+        <div class="trade-resources-bar">
+          <div class="res-item"><span class="res-icon">💎</span> YOUR BALANCE: <b id="trade-crystals">0</b> CRYSTALS</div>
+        </div>
+
+        <div class="trade-list" id="trade-list">
+          <!-- Ofertas renderizadas via trade.js -->
+        </div>
+
+        <div class="trade-footer">
+          <span class="trade-tip">💡 TIP: Sell scavenged materials for clock crystals and unlock rare blueprints!</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="crate-overlay">
+      <div class="crate-window">
+        <div class="crate-header">
+          <div>
+            <div class="crate-badge">PCB STORAGE</div>
+            <h2 class="crate-title">📦 COMPONENT CRATE</h2>
+          </div>
+          <button class="btn-close-crate" id="btn-close-crate" type="button">✕ CLOSE [ESC]</button>
+        </div>
+        <div class="crate-panels">
+          <div class="crate-panel">
+            <div class="crate-panel-title">PACK</div>
+            <div id="crate-player-list" class="crate-list"></div>
+          </div>
+          <div class="crate-panel">
+            <div class="crate-panel-title">CRATE</div>
+            <div id="crate-box-list" class="crate-list"></div>
+          </div>
+        </div>
+        <div class="crate-footer">Click » to store and « to take. Demolish only when the crate is empty.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Tela de Carregamento Cibernética (Loading Screen) -->
+  <div id="app-loader">
+    <div class="loader-content">
+      <div class="loader-logo-ring">
+        <div class="loader-chip-icon">⚡</div>
+        <div class="loader-pulse-ring"></div>
+      </div>
+      
+      <div class="loader-header">
+        <div class="loader-badge">QUANTUM SYSTEM // MOTHERBOARD OS</div>
+        <h1 class="loader-title">THE SILICON JUNGLE</h1>
+        <div class="loader-subtitle">INITIALIZING 3D ENGINE &amp; METROPOLIS ASSETS</div>
+      </div>
+
+      <div class="loader-progress-box">
+        <div class="loader-bar-track">
+          <div class="loader-bar-fill" id="loader-progress-fill"></div>
+        </div>
+        <div class="loader-stats">
+          <span class="loader-status-text" id="loader-status-msg">Syncing memory buses...</span>
+          <span class="loader-percent" id="loader-percent-text">0%</span>
+        </div>
+      </div>
+
+      <div class="loader-footer-tip">
+        <span>💡 TIP: Use the flashlight [F] to light dark ruins and harvest parts with your knife to craft weapons!</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tela Dedicada de Game Over / Morte -->
+  <div id="game-over-overlay">
+    <div class="game-over-panel">
+      <div class="game-over-badge">💀 CIRCUIT SEVERED // SIGNAL LOST</div>
+      <h1 class="game-over-title">EXPEDITION FAILED</h1>
+      <p class="game-over-desc">
+        The physical integrity of your silicon chassis has been destroyed.<br>
+        The tyrant <b>Phenom</b> overloaded the metropolis buses.
+      </p>
+
+      <div class="game-over-stats">
+        <div class="stat-card">
+          <span class="stat-icon">🧵</span>
+          <span class="stat-num" id="go-copper-count">0</span>
+          <span class="stat-name">Copper Wires</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon">💎</span>
+          <span class="stat-num" id="go-crystal-count">0</span>
+          <span class="stat-name">Clock Crystals</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon">🔋</span>
+          <span class="stat-num" id="go-core-count">0</span>
+          <span class="stat-name">Cells Collected</span>
+        </div>
+      </div>
+
+      <button class="btn-respawn" id="btn-respawn">
+        <span>🔄 RESPAWN AT THE SAFE PLAZA</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Tela de Início / Pausa / Instruções -->
+  <div id="start-overlay">
+    <div class="start-panel">
+      <div class="start-badge" id="start-badge-text">CHAPTER 1 // THE SILICON JUNGLE</div>
+      <h1 class="start-title">
+        THE SILICON JUNGLE
+        <span>THE MOTHERBOARD JUNGLE</span>
+      </h1>
+      <p class="start-desc" id="start-desc">
+        An abandoned motherboard was swallowed by a cyber jungle. The tyrant <b>Phenom</b> leads a silicon army. Equip your <b>Knife</b>, switch on the <b>Flashlight</b>, and fire the <b>Plasma Pistol</b> to survive!
+      </p>
+
+      <div id="world-select" class="world-select">
+        <div class="world-select-label">WORLDS</div>
+        <div id="world-list" class="world-list"></div>
+        <form id="world-new-form" class="world-new-form">
+          <input id="world-new-name" class="world-new-input" type="text" maxlength="32" autocomplete="off" placeholder="World 1" />
+          <button type="submit" id="btn-world-new" class="btn-world-new">NEW WORLD</button>
+        </form>
+      </div>
+
+      <div id="difficulty-select" class="difficulty-select">
+        <div class="difficulty-label">DIFFICULTY</div>
+        <div class="difficulty-btns">
+          <button type="button" class="diff-btn" data-diff="easy">EASY</button>
+          <button type="button" class="diff-btn is-active" data-diff="normal">NORMAL</button>
+          <button type="button" class="diff-btn" data-diff="hard">HARD</button>
+        </div>
+      </div>
+
+      <div id="quality-select" class="quality-select">
+        <div class="quality-label">QUALITY</div>
+        <div class="quality-btns">
+          <button type="button" class="quality-btn" data-quality="LOW">LOW</button>
+          <button type="button" class="quality-btn" data-quality="MED">MEDIUM</button>
+          <button type="button" class="quality-btn" data-quality="HIGH">HIGH</button>
+        </div>
+      </div>
+
+      <button class="btn-play" id="btn-start">
+        <span id="btn-start-text">START EXPEDITION</span> ▶
+      </button>
+      <div class="overlay-hint" id="overlay-hint">Create a world to begin</div>
+
+      <details class="controls-fold" id="controls-fold" open>
+        <summary class="controls-fold-summary">Controls</summary>
+        <div class="controls-grid">
+          <div><span class="key-badge">W A S D</span> Move</div>
+          <div><span class="key-badge">MOUSE</span> Aim / look</div>
+          <div><span class="key-badge">LMB</span> Attack / fire / cut</div>
+          <div><span class="key-badge">1 2 3 4</span> Switch weapon / tool</div>
+          <div><span class="key-badge">TAB / I</span> Pack / inventory</div>
+          <div><span class="key-badge">L / F</span> Flashlight on / off</div>
+          <div><span class="key-badge">SCROLL</span> Cycle weapons</div>
+          <div><span class="key-badge">E</span> Interact / collect / talk</div>
+          <div><span class="key-badge">B</span> Build mode (ghost)</div>
+          <div><span class="key-badge">R</span> Rotate piece 90°</div>
+          <div><span class="key-badge">[ ] / SCROLL</span> Cycle piece (in build)</div>
+          <div><span class="key-badge">SHIFT / SPACE</span> Sprint / jump</div>
+          <div><span class="key-badge">ESC</span> Pause / close menus</div>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <!-- Carregador Automático Dinâmico (Sem cache hardcoded) -->
+  <script>
+    (function () {
+      const qualityRow = document.getElementById('quality-select');
+      if (qualityRow) qualityRow.addEventListener('click', (e) => e.stopPropagation());
+      let saved = 'MED';
+      try { saved = localStorage.getItem('mw_quality') || 'MED'; } catch (e) {}
+      document.querySelectorAll('[data-quality]').forEach((btn) => {
+        btn.classList.toggle('is-active', btn.dataset.quality === saved);
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          try { localStorage.setItem('mw_quality', btn.dataset.quality); } catch (err) {}
+          location.reload();
+        });
+      });
+    })();
+  </script>
+
+  <script type="module">
+    import(`./js/main.js?t=${Date.now()}`).catch(err => {
+      console.error('[Engine Loader] Failed to load main.js:', err);
+    });
+  </script>
+</body>
+</html>

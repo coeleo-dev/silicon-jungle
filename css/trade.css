@@ -1,0 +1,199 @@
+/* MENU DE COMÉRCIO NPC (BIP O FERREIRO) */
+#trade-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(circle at center, rgba(8, 20, 28, 0.88) 0%, rgba(4, 10, 14, 0.96) 100%);
+  z-index: var(--z-trade, 200);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  backdrop-filter: blur(10px);
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+#trade-overlay.visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.trade-window {
+  width: 90%;
+  max-width: 840px;
+  max-height: 80vh;
+  background: rgba(10, 22, 28, 0.95);
+  border: 2px solid var(--pcb-gold, #f59e0b);
+  border-radius: 14px;
+  box-shadow: 0 0 35px rgba(245, 158, 11, 0.25), inset 0 0 25px rgba(0, 240, 255, 0.1);
+  padding: 24px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow: hidden;
+}
+
+.trade-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid rgba(245, 158, 11, 0.2);
+  padding-bottom: 12px;
+}
+
+.trade-badge {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: var(--pcb-green, #00ffaa);
+  letter-spacing: 2px;
+}
+
+.trade-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 20px;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: 1.5px;
+  margin: 4px 0 0 0;
+}
+
+.btn-close-trade {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid #ef4444;
+  color: #fca5a5;
+  font-family: 'Chakra Petch', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btn-close-trade:hover {
+  background: #ef4444;
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
+}
+
+/* Barra de Saldo */
+.trade-resources-bar {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: rgba(120, 80, 0, 0.35);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  padding: 10px 16px;
+  border-radius: 8px;
+}
+
+/* Lista de Ofertas */
+.trade-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  padding-right: 6px;
+  flex: 1;
+  min-height: 0;
+}
+
+.trade-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(15, 30, 40, 0.7);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  border-radius: 10px;
+  padding: 12px 18px;
+  transition: all 0.2s ease;
+}
+.trade-card:hover {
+  border-color: var(--pcb-gold, #f59e0b);
+  background: rgba(15, 35, 45, 0.85);
+}
+
+.trade-icon {
+  font-size: 28px;
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+.trade-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.trade-label {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 1px;
+}
+
+.trade-cost {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+
+.trade-reward {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  color: #94a3b8;
+  line-height: 1.3;
+}
+
+.btn-trade {
+  font-family: 'Chakra Petch', sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  letter-spacing: 1px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+.btn-trade.ready {
+  background: linear-gradient(135deg, #b45309, #f59e0b);
+  border: 1px solid #fbbf24;
+  color: #ffffff;
+  box-shadow: 0 0 14px rgba(245, 158, 11, 0.4);
+}
+.btn-trade.ready:hover {
+  transform: scale(1.04);
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.7);
+}
+.btn-trade.locked {
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+.trade-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 8px;
+}
+
+.trade-tip {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: var(--pcb-gold, #f59e0b);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Reutiliza badges de custo do crafting (definidos em crafting.css) */

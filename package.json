@@ -1,0 +1,15 @@
+{
+  "name": "miniworld-survival",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The Silicon Jungle — first-person Three.js survival on an abandoned PCB",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test 'js/**/*.test.mjs'",
+    "start": "python3 serve.py"
+  }
+}

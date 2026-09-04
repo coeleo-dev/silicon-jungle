@@ -1,0 +1,177 @@
+# =============================================================================
+# miniworld-survival — The Silicon Jungle
+# Vanilla ES modules + Three.js + servidor Python local (serve.py)
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Secrets e ambiente local
+# -----------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+!.env.sample
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+secrets.json
+auth.json
+
+# -----------------------------------------------------------------------------
+# Logs e debug (Cursor, Caramelo, Node, Python)
+# -----------------------------------------------------------------------------
+*.log
+*.log.*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+.cursor/*.log
+.cursor/debug-*.log
+.caramelo/*.log
+.caramelo/debug.log
+
+# -----------------------------------------------------------------------------
+# Ferramentas de IDE / agentes (estado local; regras versionáveis ficam de fora)
+# -----------------------------------------------------------------------------
+.cursor/*
+!.cursor/rules/
+!.cursor/rules/**
+!.cursor/skills/
+!.cursor/skills/**
+.caramelo/debug.log
+.caramelo/*
+docs/*
+.idea/
+*.iml
+*.swp
+*.swo
+*~
+*.bak
+*.orig
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+!.vscode/settings.json
+
+# -----------------------------------------------------------------------------
+# Sistema operacional
+# -----------------------------------------------------------------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*~
+.nfs*
+
+# -----------------------------------------------------------------------------
+# Node.js (npx serve / http-server / dependências futuras)
+# -----------------------------------------------------------------------------
+node_modules/
+jspm_packages/
+bower_components/
+.npm
+.yarn/
+.pnp
+.pnp.js
+.pnp.cjs
+.pnpm-store/
+
+# -----------------------------------------------------------------------------
+# Python (serve.py e caches)
+# -----------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+ENV/
+env/
+*.egg
+*.egg-info/
+.eggs/
+pip-log.txt
+pip-delete-this-directory.txt
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.tox/
+.coverage
+.coverage.*
+htmlcov/
+.hypothesis/
+.cache/
+*.pyo
+
+# -----------------------------------------------------------------------------
+# Build, dist e artefactos de bundler (Vite/Webpack/Rollup, se vierem)
+# -----------------------------------------------------------------------------
+dist/
+build/
+out/
+.tmp/
+.temp/
+.cache/
+.parcel-cache/
+.turbo/
+.vite/
+.rollup.cache/
+*.tsbuildinfo
+
+# -----------------------------------------------------------------------------
+# Testes e cobertura
+# -----------------------------------------------------------------------------
+coverage/
+.nyc_output/
+playwright-report/
+test-results/
+blob-report/
+.jest/
+
+# -----------------------------------------------------------------------------
+# Servidor local / processos
+# -----------------------------------------------------------------------------
+*.pid
+*.seed
+*.pid.lock
+.python-version
+
+# -----------------------------------------------------------------------------
+# Capturas e dumps locais (não fazem parte do jogo)
+# -----------------------------------------------------------------------------
+*.local
+*.tmp
+screenshots/
+captures/
+*.har
+
+# -----------------------------------------------------------------------------
+# Arquivos grandes / binários acidentais
+# -----------------------------------------------------------------------------
+*.zip
+*.tar
+*.tar.gz
+*.7z
+*.rar
+*.iso
+
+# -----------------------------------------------------------------------------
+# Patches
+# -----------------------------------------------------------------------------
+*.orig
+*.rej

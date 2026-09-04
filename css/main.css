@@ -1,0 +1,62 @@
+:root {
+  --pcb-green: #00ffaa;
+  --pcb-gold: #ffd24d;
+  --cyan-glow: #00f0ff;
+  --magenta-neon: #ff0077;
+  --amber-warn: #ffb700;
+  --hud-bg: rgba(7, 18, 14, 0.82);
+  --hud-border: rgba(0, 255, 170, 0.4);
+  --hud-glow: 0 0 12px rgba(0, 255, 170, 0.3);
+  --z-canvas: 1;
+  --z-scanlines: 2;
+  --z-hud: 10;
+  --z-banner: 20;
+  --z-dialogue: 40;
+  --z-crafting: 200;
+  --z-trade: 200;
+  --z-inventory: 210;
+  --z-start: 300;
+  --z-loader: 400;
+  --z-game-over: 500;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: #9cb3c9;
+  font-family: 'Chakra Petch', sans-serif;
+  color: #e0f2eb;
+}
+
+#webgl-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: block;
+  z-index: var(--z-canvas, 1);
+}
+
+/* Efeito de scanlines de anime */
+.scanlines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, transparent 65%, rgba(10, 25, 20, 0.45) 100%),
+              linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.12) 50%);
+  background-size: 100% 100%, 100% 4px;
+  pointer-events: none;
+  z-index: var(--z-scanlines, 2);
+}

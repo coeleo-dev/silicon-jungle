@@ -1,0 +1,116 @@
+/* DIALOGUE OVERLAY CYBERPUNK / DIEGETIC PCB */
+#dialogue-overlay {
+  position: absolute;
+  bottom: 140px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  width: 90%;
+  max-width: 820px;
+  z-index: var(--z-dialogue, 40);
+  pointer-events: auto;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s;
+}
+
+#dialogue-overlay.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.dialogue-card {
+  background: rgba(8, 14, 22, 0.92);
+  border: 2px solid var(--pcb-green, #00ffaa);
+  border-radius: 12px;
+  box-shadow: 0 0 25px rgba(0, 255, 170, 0.25), inset 0 0 15px rgba(0, 240, 255, 0.1);
+  backdrop-filter: blur(12px);
+  padding: 16px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.dialogue-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border-bottom: 1px solid rgba(0, 255, 170, 0.2);
+  padding-bottom: 8px;
+}
+
+.dialogue-avatar {
+  font-size: 28px;
+  background: rgba(0, 40, 25, 0.8);
+  border: 1px solid var(--pcb-green, #00ffaa);
+  border-radius: 8px;
+  padding: 4px 8px;
+  box-shadow: 0 0 10px rgba(0, 255, 170, 0.3);
+}
+
+.dialogue-meta {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.dialogue-name {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--pcb-green, #00ffaa);
+  letter-spacing: 1.5px;
+}
+
+.dialogue-role {
+  font-family: 'Chakra Petch', sans-serif;
+  font-size: 11px;
+  color: #94a3b8;
+  letter-spacing: 1px;
+}
+
+.dialogue-signal-tag {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: var(--pcb-gold, #f59e0b);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  background: rgba(245, 158, 11, 0.08);
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.dialogue-body {
+  min-height: 58px;
+}
+
+#dialogue-text {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #f1f5f9;
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+.dialogue-footer {
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 6px;
+}
+
+.dialogue-prompt {
+  font-family: 'Chakra Petch', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--cyan-glow, #38bdf8);
+  letter-spacing: 1px;
+  animation: pulse-glow 1.5s infinite alternate;
+}
+
+@keyframes pulse-glow {
+  0% { opacity: 0.6; }
+  100% { opacity: 1.0; }
+}

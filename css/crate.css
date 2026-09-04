@@ -1,0 +1,106 @@
+#crate-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(circle at center, rgba(8, 20, 28, 0.88) 0%, rgba(4, 10, 14, 0.96) 100%);
+  z-index: var(--z-crafting, 200);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  backdrop-filter: blur(10px);
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+#crate-overlay.visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+.crate-window {
+  width: 92%;
+  max-width: 720px;
+  background: rgba(10, 22, 28, 0.95);
+  border: 2px solid var(--pcb-green, #00ffaa);
+  border-radius: 14px;
+  box-shadow: 0 0 35px rgba(0, 255, 170, 0.3);
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.crate-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid rgba(0, 255, 170, 0.2);
+  padding-bottom: 10px;
+}
+.crate-badge {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: #67e8f9;
+  letter-spacing: 1px;
+}
+.crate-title {
+  margin: 4px 0 0;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 18px;
+  color: #e2e8f0;
+}
+.btn-close-crate {
+  background: transparent;
+  border: 1px solid rgba(0, 255, 170, 0.4);
+  color: #00ffaa;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: 'Share Tech Mono', monospace;
+}
+.crate-panels {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.crate-panel-title {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  color: #72a897;
+  margin-bottom: 8px;
+}
+.crate-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 48vh;
+  overflow: auto;
+}
+.crate-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  background: rgba(4, 18, 14, 0.85);
+  border: 1px solid rgba(0, 255, 170, 0.25);
+  color: #e2e8f0;
+  padding: 8px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: 'Share Tech Mono', monospace;
+}
+.crate-row:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.crate-arrow {
+  color: #22d3ee;
+}
+.crate-footer {
+  font-size: 12px;
+  color: #72a897;
+  font-family: 'Share Tech Mono', monospace;
+}

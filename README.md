@@ -1,4 +1,4 @@
-# The Silicon Jungle Survival
+# The Silicon Jungle
 
 A first-person 3D survival-action game on an abandoned motherboard overgrown with cyber-jungle. You are miniaturized. **Phenom**, a corrupt CPU with a microcode defect, hunts you with robots.
 

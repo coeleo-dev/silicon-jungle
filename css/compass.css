@@ -1,0 +1,33 @@
+/* Bússola Eletrônica */
+.compass-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: var(--hud-bg);
+  border: 1px solid var(--hud-border);
+  border-radius: 50% 50% 12px 12px;
+  padding: 10px;
+  backdrop-filter: blur(8px);
+  box-shadow: var(--hud-glow);
+}
+
+.compass-dial-wrap {
+  width: 110px;
+  height: 110px;
+  position: relative;
+}
+
+#compass-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.compass-readout {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: #92e0c7;
+  letter-spacing: 1px;
+  text-align: center;
+}

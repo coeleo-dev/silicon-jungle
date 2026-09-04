@@ -1,0 +1,236 @@
+/* MENU DE CRAFTING DA BANCADA DOS TRANSISTORS */
+#crafting-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(circle at center, rgba(8, 20, 28, 0.88) 0%, rgba(4, 10, 14, 0.96) 100%);
+  z-index: var(--z-crafting, 200);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  backdrop-filter: blur(10px);
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+#crafting-overlay.visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.crafting-window {
+  width: 90%;
+  max-width: 840px;
+  max-height: 80vh;
+  background: rgba(10, 22, 28, 0.95);
+  border: 2px solid var(--pcb-green, #00ffaa);
+  border-radius: 14px;
+  box-shadow: 0 0 35px rgba(0, 255, 170, 0.3), inset 0 0 25px rgba(0, 240, 255, 0.1);
+  padding: 24px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow: hidden;
+}
+
+.crafting-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid rgba(0, 255, 170, 0.2);
+  padding-bottom: 12px;
+}
+
+.crafting-badge {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: var(--pcb-gold, #f59e0b);
+  letter-spacing: 2px;
+}
+
+.crafting-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 20px;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: 1.5px;
+  margin: 4px 0 0 0;
+}
+
+.btn-close-craft {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid #ef4444;
+  color: #fca5a5;
+  font-family: 'Chakra Petch', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btn-close-craft:hover {
+  background: #ef4444;
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
+}
+
+/* Barra de Recursos em Tempo Real */
+.crafting-resources-bar {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: rgba(0, 40, 25, 0.6);
+  border: 1px solid rgba(0, 255, 170, 0.25);
+  padding: 10px 16px;
+  border-radius: 8px;
+}
+
+.res-item {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+  color: #cbd5e1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.res-item b {
+  color: var(--cyan-glow, #38bdf8);
+}
+
+/* Grid de Receitas */
+.crafting-recipes-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  padding-right: 6px;
+  flex: 1;
+  min-height: 0;
+}
+
+.recipe-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(15, 30, 40, 0.7);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 10px;
+  padding: 12px 18px;
+  transition: all 0.2s ease;
+}
+.recipe-card:hover {
+  border-color: var(--pcb-green, #00ffaa);
+  background: rgba(15, 35, 45, 0.85);
+}
+.recipe-card.crafted {
+  opacity: 0.65;
+  border-color: rgba(148, 163, 184, 0.3);
+}
+
+.recipe-icon {
+  font-size: 28px;
+  background: rgba(0, 240, 255, 0.08);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+.recipe-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.recipe-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 1px;
+}
+
+.recipe-desc {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  color: #94a3b8;
+  line-height: 1.3;
+}
+
+.recipe-cost {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+
+.cost-badge {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+.cost-badge.ok {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid #10b981;
+  color: #6ee7b7;
+}
+.cost-badge.missing {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid #ef4444;
+  color: #fca5a5;
+}
+
+.btn-craft {
+  font-family: 'Chakra Petch', sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  letter-spacing: 1px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+.btn-craft.ready {
+  background: linear-gradient(135deg, #059669, #10b981);
+  border: 1px solid #00ffaa;
+  color: #ffffff;
+  box-shadow: 0 0 14px rgba(0, 255, 170, 0.4);
+}
+.btn-craft.ready:hover {
+  transform: scale(1.04);
+  box-shadow: 0 0 20px rgba(0, 255, 170, 0.7);
+}
+.btn-craft.locked {
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  color: #64748b;
+  cursor: not-allowed;
+}
+.btn-craft.disabled {
+  background: rgba(30, 41, 59, 0.4);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  color: #94a3b8;
+  cursor: default;
+}
+
+.crafting-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 8px;
+}
+
+.crafting-tip {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: var(--pcb-gold, #f59e0b);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
